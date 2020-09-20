@@ -1,0 +1,4 @@
+numpy==1.16.5
+static-frame>=0.6.34
+pytest==3.8.0
+
