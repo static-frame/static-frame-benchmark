@@ -1,4 +1,6 @@
 numpy==1.16.5
 static-frame>=0.6.34
 pytest==3.8.0
+asv==0.4.2
+virtualenv
 
