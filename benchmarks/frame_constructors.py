@@ -1,5 +1,5 @@
 
-
+import numpy
 import static_frame as sf
 
 class FromRecords:
@@ -11,13 +11,11 @@ class FromRecords:
     # number = 1
     # repeat = (3, 250, 10)
 
-    def setup(self, nrows):
+    def setup(self):
         N = 100000
         self.gen = ((x, x * 20, x * 100) for x in range(N))
 
-    def time_frame_from_records(self, nrows):
+    def time_frame_from_records(self):
         f = sf.Frame.from_records(self.gen)
 
 
-
-if __name__ ==
