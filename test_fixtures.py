@@ -34,10 +34,25 @@ def test_spec_to_array_a() -> None:
     # import ipdb; ipdb.set_trace()
 
 
+#-------------------------------------------------------------------------------
+
 def test_build_index_a() -> None:
 
     ix1 = Builder.build_index(4, sf.IndexHierarchy, (int, bool))
-    assert ix1.shape  == (4, 2)
+    ix2 = Builder.build_index(4, (sf.Index, sf.Index), (int, bool))
+
+    assert ix1.shape == (4, 2)
+    assert ix1.equals(ix2)
+
+def test_build_index_b() -> None:
+
+    with self.assertRaises(RuntimeError):
+        _ = Builder.build_index(4, (sf.Index, sf.IndexGO), (int, bool))
+
+    ix1 = Builder.build_index(4, (sf.IndexGO, sf.IndexGO), (int, bool))
+
+    import ipdb; ipdb.set_trace()
+
 
 def test_build_index_b() -> None:
 
@@ -45,17 +60,31 @@ def test_build_index_b() -> None:
     assert ix1.__class__ == sf.IndexDate
 
 
+
+def test_build_values_a() -> None:
+
+    ix1 = Builder.build_values((4, 8), (int, bool, str))
+
+    assert ix1.shapes.tolist() == [(4,), (4,), (4,), (4,), (4,), (4,), (4,), (4,)]
+
+
+
+
+#-------------------------------------------------------------------------------
+
 def test_node_a() -> None:
 
     from fixtures import f, i, c, v
-    from fixtures import F, I, Shape
+    from fixtures import dtY, dtM, dtD, dts, dtns
+    from fixtures import F, Fg, I, Ig, IDg, Shape
 
-    post = f(F)|i(I,str)|c(I,int)|v(bool,int)
 
-    shape = Shape((4, 8))
-    post[shape]
-    print(shape)
+    post = f(Fg)|i(I,str)|c((Ig,IDg),(int,dtD))|v(bool,int,str,(bool,int))
 
+    f1 = post[Shape((2, 2))]
+    print(f1)
+
+    # f1 = post[Shape((4, 8))]
     # import ipdb; ipdb.set_trace()
 
 

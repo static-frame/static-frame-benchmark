@@ -12,6 +12,7 @@ import function_pipe as fpn
 DtypeSpecOrSpecs = tp.Union[DtypeSpecifier, tp.Tuple[DtypeSpecifier, ...]]
 DTYPE_OBJECT = np.dtype(object)
 
+#-------------------------------------------------------------------------------
 def dtype_to_element_iter(dtype: np.dtype) -> tp.Iterator[tp.Any]:
 
     if dtype.kind == 'i': # int
@@ -25,7 +26,7 @@ def dtype_to_element_iter(dtype: np.dtype) -> tp.Iterator[tp.Any]:
     elif dtype.kind == 'b': # boolean
         return it.cycle((False, True))
     elif dtype.kind in ('U', 'S'): # str
-        return it.cycle(('foo', 'foo', 'bar', 'baz'))
+        return it.cycle(('foo', 'bar', 'baz'))
     elif dtype.kind == 'O': # object
         return it.cycle((None, 'foo', 2.5, False))
     elif dtype.kind == 'M': # datetime64
@@ -35,6 +36,8 @@ def dtype_to_element_iter(dtype: np.dtype) -> tp.Iterator[tp.Any]:
 
     raise NotImplementedError(f'no handling for {dtype}')
 
+
+DTYPE_KINDS_NO_FROMITER = ('O', 'U', 'S')
 
 def dtype_to_array(
         dtype: np.dtype,
@@ -48,7 +51,7 @@ def dtype_to_array(
     if not gen:
         gen = dtype_to_element_iter(dtype)
 
-    if dtype.kind != 'O':
+    if dtype.kind not in DTYPE_KINDS_NO_FROMITER:
         array = np.fromiter(gen, count=count, dtype=dtype)
     else:
         array = np.empty(shape=count, dtype=dtype) # object
@@ -73,94 +76,166 @@ def dtype_spec_to_array(
     return dtype_to_array(dtype, count)
 
 
-F = sf.Frame
-FG = sf.FrameGO
-I = sf.Index
-IG = sf.IndexGO
-IH = sf.IndexHierarchy
-IHG = sf.IndexHierarchyGO
-ID = sf.IndexDate
-IDG = sf.IndexDateGO
-IN = sf.IndexNanosecond
-ING = sf.IndexNanosecondGO
 
+#-------------------------------------------------------------------------------
+F = sf.Frame
+Fg = sf.FrameGO
+I = sf.Index
+Ig = sf.IndexGO
+IH = sf.IndexHierarchy
+IHg = sf.IndexHierarchyGO
+
+IY = sf.IndexYear
+IYg = sf.IndexYearGO
+IYM = sf.IndexYearMonth
+IYMg = sf.IndexYearMonthGO
+ID = sf.IndexDate
+IDg = sf.IndexDateGO
+IS = sf.IndexSecond
+ISg = sf.IndexSecondGO
+IN = sf.IndexNanosecond
+INg = sf.IndexNanosecondGO
+
+dtY = np.dtype('datetime64[Y]')
+dtM = np.dtype('datetime64[M]')
+dtD = np.dtype('datetime64[D]')
+# NOTE: we not do hour as IH is ambiguous
+dts = np.dtype('datetime64[s]')
+dtns = np.dtype('datetime64[ns]')
+
+#-------------------------------------------------------------------------------
+ConstructorOrConstructors = tp.Union[
+        tp.Type[ContainerOperand],
+        tp.Tuple[tp.Type[ContainerOperand], ...]
+        ]
+ShapeType = tp.Tuple[int, int]
+IndexTypes = tp.Union[sf.Index, sf.IndexHierarchy]
 
 class Builder:
 
     @staticmethod
     def build_index(
             count: int,
-            constructor: tp.Type[ContainerOperand],
+            constructor: ConstructorOrConstructors,
             dtype_spec: DtypeSpecOrSpecs,
-            index_constructors=None,
-            ) -> tp.Union[sf.Index, sf.IndexHierarchy]:
+            ) -> IndexTypes:
 
-        if issubclass(constructor, IH):
+        if isinstance(constructor, tuple):
             # dtype_spec must be a tuple
             if not isinstance(dtype_spec, tuple) or len(dtype_spec) < 2:
                 raise RuntimeError(f'for building IH dtype_spec must be a tuple')
-            if index_constructors and len(index_constructors) != len(dtype_spec):
+            if len(constructor) != len(dtype_spec):
                 raise RuntimeError(f'length of index_constructors must be the same as dtype_spec')
+
+            is_static = {c.STATIC for c in constructor}
+            assert len(is_static) == 1
+
+            cls = (sf.IndexHierarchy if is_static.pop()
+                    else sf.IndexHierarchyGO)
+
             tb = sf.TypeBlocks.from_blocks(dtype_spec_to_array(dts, count=count)
                     for dts in dtype_spec)
-            return constructor._from_type_blocks(tb,
-                    index_constructors=index_constructors,
+
+            return cls._from_type_blocks(tb,
+                    index_constructors=constructor,
                     own_blocks=True,
                     )
 
-        if index_constructors:
-            raise RuntimeError('cannot provide index_constructors if not building an IH index')
-
+        # if constructor is IndexHierarchy, this will work, as array will be a 1D array of tuples that, when given to from_labels, will work
         array = dtype_spec_to_array(dtype_spec, count=count)
         return constructor.from_labels(array)
 
+    @staticmethod
+    def build_values(
+            shape: ShapeType,
+            dtype_specs: tp.Sequence[DtypeSpecOrSpecs]
+            ) -> sf.TypeBlocks:
+
+        count_row, count_col = shape
+        count_dtype = len(dtype_specs)
+
+        def gen() -> tp.Iterator[np.ndarray]:
+            for col in range(count_col):
+                yield dtype_spec_to_array(
+                        dtype_specs[col % count_dtype],
+                        count=count_row,
+                        )
+        return sf.TypeBlocks.from_blocks(gen())
 
 
+    @staticmethod
+    def build_frame(index, columns, blocks, constructor) -> sf.Frame:
+        return constructor(blocks,
+                index=index,
+                columns=columns,
+                own_data=True,
+                own_index=True,
+                own_columns=True,
+                )
 
+#-------------------------------------------------------------------------------
+from functools import partial
+pipe_node_factory = partial(fpn.pipe_node_factory, core_decorator=lambda f: f)
 
-
-@fpn.pipe_node_factory
-def f(constructor, **kwargs):
-    pni = kwargs[fpn.PN_INPUT]
+@pipe_node_factory
+@fpn.pipe_kwarg_bind(fpn.PN_INPUT)
+def f(pni, constructor):
+    # pni = kwargs[fpn.PN_INPUT]
     pni['f'] = dict(constructor=constructor)
+    if pni.complete():
+        return pni.build()
 
-@fpn.pipe_node_factory
-def i(constructor,
+@pipe_node_factory
+@fpn.pipe_kwarg_bind(fpn.PN_INPUT)
+def i(pni,
+        constructor,
         dtype_spec: DtypeSpecOrSpecs,
-        index_constructors=None,
-        **kwargs):
-    pni = kwargs[fpn.PN_INPUT]
-    pni['i'] = dict(constructor=constructor,
-            dtype_spec=dtype_spec,
-            index_constructors=index_constructors,
-            )
+        ):
+    pni['i'] = dict(constructor=constructor, dtype_spec=dtype_spec)
+    if pni.complete():
+        return pni.build()
 
-@fpn.pipe_node_factory
-def c(constructor,
-            dtype_spec: DtypeSpecOrSpecs,
-            index_constructors=None,
-            **kwargs):
-    pni = kwargs[fpn.PN_INPUT]
-    pni['c'] = dict(constructor=constructor,
-            dtype_spec=dtype_spec,
-            index_constructors=index_constructors,
-            )
+@pipe_node_factory
+@fpn.pipe_kwarg_bind(fpn.PN_INPUT)
+def c(pni,
+        constructor,
+        dtype_spec: DtypeSpecOrSpecs,
+        ):
+    pni['c'] = dict(constructor=constructor, dtype_spec=dtype_spec)
+    if pni.complete():
+        return pni.build()
 
-@fpn.pipe_node_factory
-def v(*dtype_spec, **kwargs):
-    pni = kwargs[fpn.PN_INPUT]
-    pni['v'] = dict(dtype_spec=dtype_spec)
+@pipe_node_factory
+@fpn.pipe_kwarg_bind(fpn.PN_INPUT)
+def v(pni, *dtype_specs):
+    pni['v'] = dict(dtype_specs=dtype_specs)
+    if pni.complete():
+        return pni.build()
 
 
 class Shape(fpn.PipeNodeInput):
-    def __init__(self, shape: tp.Tuple[int, int]):
+    def __init__(self, shape: ShapeType):
         self.shape = shape
-        self.ref = dict()
+        self._ref = dict()
 
     def __setitem__(self, key, value):
-        if key in self.ref:
+        if key in self._ref:
             raise KeyError('duplicate key', key)
-        self.ref[key] = value
+        self._ref[key] = value
 
     def __repr__(self) -> str:
-        return repr(self.ref)
+        return repr(self._ref)
+
+    def complete(self) -> bool:
+        return all(k in self._ref for k in tuple('ficv'))
+
+    def build(self) -> sf.Frame:
+        count_row, count_col = self.shape
+        index = Builder.build_index(count=count_row, **self._ref['i'])
+        columns = Builder.build_index(count=count_col, **self._ref['c'])
+        blocks = Builder.build_values(shape=self.shape, **self._ref['v'])
+        return Builder.build_frame(index=index,
+                columns=columns,
+                blocks=blocks,
+                **self._ref['f'],
+                )

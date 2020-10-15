@@ -19,4 +19,12 @@ class FromRecords:
         f = sf.Frame.from_records(self.gen)
 
 
-[
+
+
+# f{FG}i{ID}c{I,float}v{float,bool,str}  (10000, 5000)
+# 'f(FG)|i(I,str)|c(I,float)|v(float,bool,str)'
+
+
+
+
+
