@@ -3,4 +3,4 @@ static-frame>=0.6.34
 pytest==3.8.0
 asv==0.4.2
 virtualenv
-
+function-pipe>=1.0.3

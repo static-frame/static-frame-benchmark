@@ -19,3 +19,4 @@ class FromRecords:
         f = sf.Frame.from_records(self.gen)
 
 
+[
