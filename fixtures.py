@@ -2,6 +2,10 @@ import typing as tp
 import itertools as it
 import numpy as np
 from static_frame.core.util import DtypeSpecifier
+import static_frame as sf
+import function_pipe as fpn
+# from function_pipe import pipe_node
+# from function_pipe import pipe_node_factory
 
 
 def dtype_to_element(dtype: np.dtype) -> tp.Iterator[tp.Any]:
@@ -28,6 +32,68 @@ def dtype_to_element(dtype: np.dtype) -> tp.Iterator[tp.Any]:
     raise NotImplementedError(f'no handling for {dtype}')
 
 
-def dtype_to_array(dtype: np.dtype, size: int) -> np.ndarray:
+def dtype_to_array(dtype: np.dtype, count: int) -> np.ndarray:
+    gen = dtype_to_element(dtype)
     if dtype.kind != 'O':
-        return np.fromiter(dtype_to_element(dtype), size=size, dtype=dtype)
+        return np.fromiter(gen, count=count, dtype=dtype)
+
+    array = np.empty(shape=count, dtype=dtype) # object
+    for i, v in zip(range(len(array)), gen):
+        array[i] = v
+
+    return array
+
+
+def dtype_spec_to_array(
+        dtype_spec: DtypeSpecifier,
+        count: int,
+        ) -> np.ndarray:
+    dtype = np.dtype(dtype_spec)
+    return dtype_to_array(dtype, count)
+
+
+F = sf.Frame
+FG = sf.FrameGO
+I = sf.Index
+IG = sf.IndexGO
+IH = sf.IndexHierarchy
+IHG = sf.IndexHierarchyGO
+ID = sf.IndexDate
+IDG = sf.IndexDateGO
+IN = sf.IndexNanosecond
+ING = sf.IndexNanosecondGO
+
+
+@fpn.pipe_node_factory
+def f(type_symbol, **kwargs):
+    pni = kwargs[fpn.PN_INPUT]
+    pni['f'] = dict(type_symbol=type_symbol)
+
+@fpn.pipe_node_factory
+def i(type_symbol, values_dtype_spec, **kwargs):
+    pni = kwargs[fpn.PN_INPUT]
+    pni['i'] = dict(type_symbol=type_symbol, values_dtype_spec=values_dtype_spec)
+
+@fpn.pipe_node_factory
+def c(type_symbol, values_dtype_spec, **kwargs):
+    pni = kwargs[fpn.PN_INPUT]
+    pni['c'] = dict(type_symbol=type_symbol, values_dtype_spec=values_dtype_spec)
+
+@fpn.pipe_node_factory
+def v(*values_dtype_spec, **kwargs):
+    pni = kwargs[fpn.PN_INPUT]
+    pni['v'] = dict(values_dtype_spec=values_dtype_spec)
+
+
+class Shape(fpn.PipeNodeInput):
+    def __init__(self, shape: tp.Tuple[int, int]):
+        self.shape = shape
+        self.ref = dict()
+
+    def __setitem__(self, key, value):
+        if key in self.ref:
+            raise KeyError('duplicate key', key)
+        self.ref[key] = value
+
+    def __repr__(self) -> str:
+        return repr(self.ref)
