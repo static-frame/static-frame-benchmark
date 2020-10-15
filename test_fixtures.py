@@ -85,6 +85,6 @@ def test_node_a() -> None:
     print(f1)
 
     # f1 = post[Shape((4, 8))]
-    # import ipdb; ipdb.set_trace()
+    import ipdb; ipdb.set_trace()
 
 
