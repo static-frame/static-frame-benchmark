@@ -1,6 +1,11 @@
 import typing as tp
-import itertools as it
 import numpy as np
+import random
+from itertools import chain
+from itertools import cycle
+from functools import lru_cache
+import string
+
 from static_frame.core.util import DtypeSpecifier
 from static_frame.core.container import ContainerOperand
 
@@ -11,30 +16,116 @@ import function_pipe as fpn
 
 DtypeSpecOrSpecs = tp.Union[DtypeSpecifier, tp.Tuple[DtypeSpecifier, ...]]
 DTYPE_OBJECT = np.dtype(object)
+MAX_SIZE = 1_000_000
+
+
+class SourceValues:
+    _INTEGERS = None
+    _CHARS = None
+
+    @staticmethod
+    def shuffle(mutable) -> None:
+        state = random.getstate()
+        random.seed(42)
+        random.shuffle(mutable)
+        random.setstate(state)
+
+    @classmethod
+    def get_ints(cls) -> tp.Sequence[int]:
+        '''Return a fixed sequence of unique integers, of size equal to MAX_SIZE.
+        '''
+        if not cls._INTEGERS:
+            values = list(range(MAX_SIZE))
+            cls.shuffle(values)
+            cls._INTEGERS = values
+
+        return cls._INTEGERS
+
+    @classmethod
+    def get_chars(cls) -> tp.Sequence[str]:
+
+        if not cls._CHARS:
+            values = []
+            from hashlib import blake2b
+            for i in cls.get_ints():
+                h = blake2b(digest_size=6)
+                h.update(str.encode(str(i)))
+                values.append(h.hexdigest())
+            cls._CHARS = values
+
+        return cls._CHARS
+
+
 
 #-------------------------------------------------------------------------------
 def dtype_to_element_iter(dtype: np.dtype) -> tp.Iterator[tp.Any]:
 
-    if dtype.kind == 'i': # int
-        return it.cycle((0, -100, 25, -85555555, 23485))
-    elif dtype.kind == 'u': # int unsigned
-        return it.cycle((0, 100, 25, 512, 234))
-    elif dtype.kind == 'f': # float
-        return it.cycle((0.0, 3.2, 3.2e-8, np.nan))
-    elif dtype.kind == 'c': # complex
-        return it.cycle((3+5j, np.nan+3j, 100+.0003j))
-    elif dtype.kind == 'b': # boolean
-        return it.cycle((False, True))
-    elif dtype.kind in ('U', 'S'): # str
-        return it.cycle(('foo', 'bar', 'baz'))
-    elif dtype.kind == 'O': # object
-        return it.cycle((None, 'foo', 2.5, False))
-    elif dtype.kind == 'M': # datetime64
-        return it.cycle((np.datetime64('2012-01-05'), np.datetime64('2015-02-20'), ))
-    elif dtype.kind == 'm': # timedelta64
-        return it.cycle((np.timedelta64(3), np.timedelta64(20),))
+    ints = SourceValues.get_ints()
+    chars = SourceValues.get_chars()
 
-    raise NotImplementedError(f'no handling for {dtype}')
+    if dtype.kind == 'i': # int
+        def gen() -> tp.Iterator[tp.Any]:
+            for v in ints:
+                yield v * (-1 if v % 3 else 1)
+
+    elif dtype.kind == 'u': # int unsigned
+        def gen() -> tp.Iterator[tp.Any]:
+            yield from chain(ints[-1000:], ints[:-1000])
+
+    elif dtype.kind == 'f': # float
+        def gen() -> tp.Iterator[tp.Any]:
+            yield np.nan
+            for v in ints:
+                yield v * (.001 if v % 3 else -.001)
+
+    elif dtype.kind == 'c': # complex
+        def gen() -> tp.Iterator[tp.Any]:
+            yield complex(np.nan, np.nan)
+            for v, i in zip(chain(ints[-10:], ints[:-10]), ints):
+                yield complex(v * (-.001 if v % 3 else .001), i * (.001 if i % 4 else -.001))
+
+    elif dtype.kind == 'b': # boolean
+        def gen() -> tp.Iterator[bool]:
+            yield True
+            yield False
+            # make first two values unique
+            for v in ints:
+                yield v % 2 == 0
+
+    elif dtype.kind in ('U', 'S'): # str
+        def gen() -> tp.Iterator[str]:
+            yield from chars
+
+    elif dtype.kind == 'O': # object
+        def gen() -> tp.Iterator[tp.Any]:
+            yield None
+            yield True
+            yield False
+
+            gens = (dtype_to_element_iter(np.dtype(int)),
+                    dtype_to_element_iter(np.dtype(float)),
+                    dtype_to_element_iter(np.dtype(str)),
+                    )
+
+            for i in range(MAX_SIZE):
+                for gen in gens:
+                    yield next(gen)
+
+    elif dtype.kind == 'M': # datetime64
+        def gen() -> tp.Iterator[np.datetime64]:
+            for v in ints:
+                ofoo = dtype
+                yield np.datetime64(v, np.datetime_data(dtype)[0])
+
+    elif dtype.kind == 'm': # timedelta64
+        def gen() -> tp.Iterator[np.datetime64]:
+            for v in ints:
+                yield np.timedelta64(v, np.datetime_data(dtype)[0])
+
+    else:
+        raise NotImplementedError(f'no handling for {dtype}')
+
+    return gen()
 
 
 DTYPE_KINDS_NO_FROMITER = ('O', 'U', 'S')
@@ -53,15 +144,17 @@ def dtype_to_array(
 
     if dtype.kind not in DTYPE_KINDS_NO_FROMITER:
         array = np.fromiter(gen, count=count, dtype=dtype)
-    else:
+    elif dtype.kind == 'O':
         array = np.empty(shape=count, dtype=dtype) # object
         for i, v in zip(range(len(array)), gen):
             array[i] = v
+    else: # string typpes
+        array = np.array([next(gen) for _ in range(count)])
 
     array.flags.writeable = False
     return array
 
-
+@lru_cache()
 def dtype_spec_to_array(
         dtype_spec: DtypeSpecOrSpecs,
         count: int,
@@ -143,6 +236,7 @@ class Builder:
 
         # if constructor is IndexHierarchy, this will work, as array will be a 1D array of tuples that, when given to from_labels, will work
         array = dtype_spec_to_array(dtype_spec, count=count)
+
         return constructor.from_labels(array)
 
     @staticmethod
@@ -160,7 +254,7 @@ class Builder:
                         dtype_specs[col % count_dtype],
                         count=count_row,
                         )
-        return sf.TypeBlocks.from_blocks(gen())
+        return sf.TypeBlocks.from_blocks(gen()).consolidate()
 
 
     @staticmethod
@@ -214,8 +308,8 @@ def v(pni, *dtype_specs):
 
 
 class Shape(fpn.PipeNodeInput):
-    def __init__(self, shape: ShapeType):
-        self.shape = shape
+    def __init__(self, count_row: int, count_col: int):
+        self.shape = (count_row, count_col)
         self._ref = dict()
 
     def __setitem__(self, key, value):
