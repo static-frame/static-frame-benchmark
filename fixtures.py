@@ -328,7 +328,8 @@ class Shape(fpn.PipeNodeInput):
         index = Builder.build_index(count=count_row, **self._ref['i'])
         columns = Builder.build_index(count=count_col, **self._ref['c'])
         blocks = Builder.build_values(shape=self.shape, **self._ref['v'])
-        return Builder.build_frame(index=index,
+        return Builder.build_frame(
+                index=index,
                 columns=columns,
                 blocks=blocks,
                 **self._ref['f'],
