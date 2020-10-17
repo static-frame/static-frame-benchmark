@@ -2,12 +2,12 @@ import numpy as np
 
 import static_frame as sf
 
-from fixtures import dtype_to_element_iter
-from fixtures import dtype_to_array
-from fixtures import dtype_spec_to_array
+from benchmarks.fixtures import dtype_to_element_iter
+from benchmarks.fixtures import dtype_to_array
+from benchmarks.fixtures import dtype_spec_to_array
 
-from fixtures import Builder
-from fixtures import FixtureFactory
+from benchmarks.fixtures import Builder
+from benchmarks.fixtures import FixtureFactory
 
 
 # pytest -s --color no --disable-pytest-warnings --tb=native
@@ -111,17 +111,17 @@ def test_build_values_a() -> None:
 
 def test_node_a() -> None:
 
-    from fixtures import f, i, c, v
-    from fixtures import dtY, dtM, dtD, dts, dtns
-    from fixtures import F, Fg, I, Ig, IDg, Shape
+    from benchmarks.fixtures import f, i, c, v
+    from benchmarks.fixtures import dtY, dtM, dtD, dts, dtns
+    from benchmarks.fixtures import F, Fg, I, Ig, IDg, Shape
 
 
     post = f(Fg)|i(I,str)|c((Ig,IDg),(int,dtD))|v(bool,int,str,(bool,int))
 
-    f1 = post[Shape(2, 2)]
+    f1 = post[Shape((2, 2))]
     print(f1)
 
-    assert post[Shape(2000, 6)].shape == (2000, 6)
+    assert post[Shape((2000, 6))].shape == (2000, 6)
 
 
 def test_fixture_factory() -> None:
@@ -129,13 +129,12 @@ def test_fixture_factory() -> None:
     msg = 'f(Fg)|i(I,str)|c(IDg,dtD)|v(float)'
     func = FixtureFactory.from_str(msg)
 
-    f1 = func(2, 2)
+    f1 = func((2, 2))
 
     msg = 'f(F)|i((I,I),(str,bool))|c((IN,I),(dtns,int))|v(str,bool,object)'
     func = FixtureFactory.from_str(msg)
 
 
     # f1 = post[Shape((4, 8))]
-    import ipdb; ipdb.set_trace()
 
 

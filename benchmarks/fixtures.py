@@ -5,6 +5,8 @@ from itertools import chain
 from itertools import cycle
 from functools import lru_cache
 import string
+from hashlib import blake2b
+
 
 from static_frame.core.util import DtypeSpecifier
 from static_frame.core.container import ContainerOperand
@@ -14,6 +16,7 @@ import function_pipe as fpn
 
 DtypeSpecOrSpecs = tp.Union[DtypeSpecifier, tp.Tuple[DtypeSpecifier, ...]]
 DTYPE_OBJECT = np.dtype(object)
+DTYPE_KINDS_NO_FROMITER = ('O', 'U', 'S')
 MAX_SIZE = 1_000_000
 
 class SourceValues:
@@ -43,7 +46,6 @@ class SourceValues:
 
         if not cls._CHARS:
             values = []
-            from hashlib import blake2b
             for i in cls.get_ints():
                 h = blake2b(digest_size=6)
                 h.update(str.encode(str(i)))
@@ -124,8 +126,6 @@ def dtype_to_element_iter(dtype: np.dtype) -> tp.Iterator[tp.Any]:
 
     return gen()
 
-
-DTYPE_KINDS_NO_FROMITER = ('O', 'U', 'S')
 
 def dtype_to_array(
         dtype: np.dtype,
@@ -305,8 +305,8 @@ def v(pni, *dtype_specs):
 
 
 class Shape(fpn.PipeNodeInput):
-    def __init__(self, count_row: int, count_col: int):
-        self.shape = (count_row, count_col)
+    def __init__(self, shape: ShapeType):
+        self.shape = shape
         self._ref = dict()
 
     def __setitem__(self, key, value):
@@ -335,6 +335,6 @@ class Shape(fpn.PipeNodeInput):
 
 class FixtureFactory:
     @staticmethod
-    def from_str(msg: str) -> tp.Callable[[int, int], sf.Frame]:
+    def from_str(msg: str) -> tp.Callable[[ShapeType], sf.Frame]:
         func = eval(msg)
-        return lambda count_row, count_col: func[Shape(count_row, count_col)]
+        return lambda shape: func[Shape(shape)]
