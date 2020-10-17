@@ -18,7 +18,7 @@
     // of the repository.
     "repo_subdir": "",
 
-    "install_command": ["python -mpip install --upgrade {wheel_file}"],
+    "install_command": ["python -mpip install --upgrade {wheel_file} install function-pipe"],
     // Customizable commands for building, installing, and
     // uninstalling the project. See asv.conf.json documentation.
     //

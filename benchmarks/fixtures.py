@@ -11,13 +11,10 @@ from static_frame.core.container import ContainerOperand
 
 import static_frame as sf
 import function_pipe as fpn
-# from function_pipe import pipe_node
-# from function_pipe import pipe_node_factory
 
 DtypeSpecOrSpecs = tp.Union[DtypeSpecifier, tp.Tuple[DtypeSpecifier, ...]]
 DTYPE_OBJECT = np.dtype(object)
 MAX_SIZE = 1_000_000
-
 
 class SourceValues:
     _INTEGERS = None
@@ -334,3 +331,10 @@ class Shape(fpn.PipeNodeInput):
                 blocks=blocks,
                 **self._ref['f'],
                 )
+
+
+class FixtureFactory:
+    @staticmethod
+    def from_str(msg: str) -> tp.Callable[[int, int], sf.Frame]:
+        func = eval(msg)
+        return lambda count_row, count_col: func[Shape(count_row, count_col)]

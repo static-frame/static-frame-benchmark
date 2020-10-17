@@ -7,6 +7,7 @@ from fixtures import dtype_to_array
 from fixtures import dtype_spec_to_array
 
 from fixtures import Builder
+from fixtures import FixtureFactory
 
 
 # pytest -s --color no --disable-pytest-warnings --tb=native
@@ -122,10 +123,19 @@ def test_node_a() -> None:
 
     assert post[Shape(2000, 6)].shape == (2000, 6)
 
-    # can parse strings:
-    # eval('f(Fg)|i(I,str)|c((Ig,IDg),(int,dtD))|v(float)', locals())
+
+def test_fixture_factory() -> None:
+
+    msg = 'f(Fg)|i(I,str)|c(IDg,dtD)|v(float)'
+    func = FixtureFactory.from_str(msg)
+
+    f1 = func(2, 2)
+
+    msg = 'f(F)|i((I,I),(str,bool))|c((IN,I),(dtns,int))|v(str,bool,object)'
+    func = FixtureFactory.from_str(msg)
+
 
     # f1 = post[Shape((4, 8))]
-    # import ipdb; ipdb.set_trace()
+    import ipdb; ipdb.set_trace()
 
 
