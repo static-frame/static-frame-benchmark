@@ -38,7 +38,6 @@ class FrameA:
     FACTORY_INPUT = 'f(F)|i(I,str)|c(I,str)|v(float)'
     SHAPE = (1000, 10)
 
-
     def setup(self):
 
         frame = FixtureFactory.from_str(self.FACTORY_INPUT)(self.SHAPE)
