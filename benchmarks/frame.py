@@ -3,6 +3,10 @@ import static_frame as sf
 from types import SimpleNamespace
 from .fixtures import FixtureFactory
 from .fixtures import ShapeType
+
+from .fixtures_reference import FRAME_A
+from .fixtures_reference import FRAME_B
+
 from .prototype import apply_prototype
 
 class Prototype:
@@ -191,7 +195,7 @@ def create_fixtures(fixture: str, shape: ShapeType):
 @apply_prototype(Prototype)
 class FrameA:
 
-    FIXTURE = 'f(F)|i(I,str)|c(I,str)|v(float)'
+    FIXTURE = FRAME_A
     SHAPE = (1000, 10)
 
     def setup_cache(self) -> SimpleNamespace:
@@ -201,7 +205,7 @@ class FrameA:
 @apply_prototype(Prototype)
 class FrameB:
 
-    FIXTURE = 'f(F)|i(I,str)|c(I,str)|v(str,float,int,bool)'
+    FIXTURE = FRAME_B
     SHAPE = (1000, 10)
 
     def setup_cache(self) -> SimpleNamespace:

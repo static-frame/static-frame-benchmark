@@ -5,6 +5,9 @@ from .fixtures import FixtureFactory
 from .fixtures import ShapeType
 from .prototype import apply_prototype
 
+from .fixtures_reference import FRAME_A
+from .fixtures_reference import FRAME_C
+
 class Prototype:
 
     #---------------------------------------------------------------------------
@@ -107,7 +110,7 @@ def create_fixtures(fixture: str, shape: ShapeType):
 @apply_prototype(Prototype)
 class FrameA:
 
-    FIXTURE = 'f(F)|i(I,str)|c(I,str)|v(float)'
+    FIXTURE = FRAME_A
     SHAPE = (1000, 100)
 
     def setup_cache(self) -> SimpleNamespace:
@@ -117,7 +120,7 @@ class FrameA:
 @apply_prototype(Prototype)
 class FrameC:
 
-    FIXTURE = 'f(F)|i(I,str)|c(I,str)|v(int,int,bool,float,float)'
+    FIXTURE = FRAME_C
     SHAPE = (1000, 100)
 
     def setup_cache(self) -> SimpleNamespace:
