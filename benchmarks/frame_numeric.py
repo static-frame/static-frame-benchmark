@@ -115,9 +115,9 @@ class FrameA:
 
 
 @apply_prototype(Prototype)
-class FrameB:
+class FrameC:
 
-    FIXTURE = 'f(F)|i(I,str)|c(I,str)|v(int,int,bool,float,float,float)'
+    FIXTURE = 'f(F)|i(I,str)|c(I,str)|v(int,int,bool,float,float)'
     SHAPE = (1000, 100)
 
     def setup_cache(self) -> SimpleNamespace:
