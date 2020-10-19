@@ -13,15 +13,52 @@ from .prototype import apply_prototype
 
 class Prototype:
 
+    def asv_time_getitem_element(self, ns: SimpleNamespace):
+        _ = ns.frame[ns.columns_list[0]]
+
+    def asv_time_getitem_list(self, ns: SimpleNamespace):
+        _ = ns.frame[ns.columns_list]
+
+    def asv_time_getitem_slice(self, ns: SimpleNamespace):
+        _ = ns.frame[ns.columns_slice]
+
+    def asv_time_getitem_bool(self, ns: SimpleNamespace):
+        _ = ns.frame[ns.columns_bool]
+
+
+    def asv_time_loc_element_0(self, ns: SimpleNamespace):
+        _ = ns.frame.loc[ns.index_list[0]]
+
+    def asv_time_loc_list_0(self, ns: SimpleNamespace):
+        _ = ns.frame.loc[ns.index_list]
+
+    def asv_time_loc_slice_0(self, ns: SimpleNamespace):
+        _ = ns.frame.loc[ns.index_slice]
+
+    def asv_time_loc_bool_0(self, ns: SimpleNamespace):
+        _ = ns.frame.loc[ns.index_bool]
+
+
+    def asv_time_loc_element_1(self, ns: SimpleNamespace):
+        _ = ns.frame.loc[ns.index_list[0], ns.columns_list[0]]
+
+    def asv_time_loc_list_1(self, ns: SimpleNamespace):
+        _ = ns.frame.loc[ns.index_list, ns.columns_list]
+
+    def asv_time_loc_slice_1(self, ns: SimpleNamespace):
+        _ = ns.frame.loc[ns.index_slice, ns.columns_slice]
+
+    def asv_time_loc_bool_1(self, ns: SimpleNamespace):
+        _ = ns.frame.loc[ns.index_bool, ns.columns_bool]
+
+    # frame.bloc
+
+
 
 
 
 def create_fixtures(fixture: str, shape: ShapeType):
     frame = FixtureFactory.from_str(fixture)(shape)
-
-    records = [t for t in frame.iter_tuple(axis=1)]
-    records_dict = [dict(t) for t in frame.iter_series(axis=1)]
-    items = [(c, frame[c].values) for c in frame.columns]
 
     columns_list = [c for i, c in enumerate(frame.columns) if i % 2]
     columns_slice = slice(frame.columns.iloc[len(frame.columns) // 2], None)
@@ -33,9 +70,6 @@ def create_fixtures(fixture: str, shape: ShapeType):
 
     return SimpleNamespace(
             frame=frame,
-            records=records,
-            records_dict=records_dict,
-            items=items,
             columns_list=columns_list,
             columns_slice=columns_slice,
             columns_bool=columns_bool,
@@ -44,7 +78,7 @@ def create_fixtures(fixture: str, shape: ShapeType):
             index_bool=index_bool,
             )
 
-@apply_prototype(Prototype, InterfaceGroup.Method)
+@apply_prototype(Prototype, InterfaceGroup.Selector)
 class FrameA:
 
     FIXTURE = FRAME_A
@@ -54,7 +88,7 @@ class FrameA:
         return create_fixtures(self.FIXTURE, self.SHAPE)
 
 
-@apply_prototype(Prototype, InterfaceGroup.Method)
+@apply_prototype(Prototype, InterfaceGroup.Selector)
 class FrameB:
 
     FIXTURE = FRAME_B

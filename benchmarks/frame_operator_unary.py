@@ -13,15 +13,17 @@ from .fixtures_reference import FRAME_C
 class Prototype:
 
 
+    def asv_time_unary_abs(self, ns: SimpleNamespace):
+        _ = abs(ns.frame)
+
 
 
 def create_fixtures(fixture: str, shape: ShapeType):
     frame = FixtureFactory.from_str(fixture)(shape)
-
     return SimpleNamespace(
             frame=frame)
 
-@apply_prototype(Prototype, InterfaceGroup.Method)
+@apply_prototype(Prototype, InterfaceGroup.OperatorUnary)
 class FrameA:
 
     FIXTURE = FRAME_A
@@ -31,7 +33,7 @@ class FrameA:
         return create_fixtures(self.FIXTURE, self.SHAPE)
 
 
-@apply_prototype(Prototype, InterfaceGroup.Method)
+@apply_prototype(Prototype, InterfaceGroup.OperatorUnary)
 class FrameC:
 
     FIXTURE = FRAME_C

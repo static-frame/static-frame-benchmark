@@ -14,6 +14,23 @@ class Prototype:
 
 
 
+    def asv_time_unary_abs(self, ns: SimpleNamespace):
+        _ = abs(ns.frame)
+
+    def asv_time_binary_add_element(self, ns: SimpleNamespace):
+        _ = ns.frame + 10
+
+    def asv_time_binary_add_array(self, ns: SimpleNamespace):
+        _ = ns.frame + ns.frame.values
+
+    def asv_time_binary_eq_element(self, ns: SimpleNamespace):
+        _ = ns.frame == 10
+
+    def asv_time_binary_eq_array(self, ns: SimpleNamespace):
+        _ = ns.frame == ns.frame.values
+
+
+
 
 def create_fixtures(fixture: str, shape: ShapeType):
     frame = FixtureFactory.from_str(fixture)(shape)
