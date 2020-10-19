@@ -13,7 +13,6 @@ from .fixtures_reference import FRAME_C
 class Prototype:
 
 
-
     def asv_time_unary_abs(self, ns: SimpleNamespace):
         _ = abs(ns.frame)
 
