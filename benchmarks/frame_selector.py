@@ -14,6 +14,13 @@ from .prototype import apply_prototype
 
 class Prototype:
 
+    def asv_time_drop_getitem(self, ns: SimpleNamespace):
+        _ = ns.frame.drop[ns.columns_list]
+
+    def asv_time_drop_loc(self, ns: SimpleNamespace):
+        _ = ns.frame.drop.loc[ns.index_list, ns.columns_list]
+
+
     def asv_time_getitem_element(self, ns: SimpleNamespace):
         _ = ns.frame[ns.columns_list[0]]
 
@@ -28,7 +35,11 @@ class Prototype:
 
 
     def asv_time_loc_element_0(self, ns: SimpleNamespace):
-        _ = ns.frame.loc[ns.index_list[0]]
+        if ns.frame.index.depth > 1:
+            _ = ns.frame.loc[sf.HLoc[ns.index_list[0]]]
+        else:
+            _ = ns.frame.loc[ns.index_list[0]]
+
 
     def asv_time_loc_list_0(self, ns: SimpleNamespace):
         _ = ns.frame.loc[ns.index_list]

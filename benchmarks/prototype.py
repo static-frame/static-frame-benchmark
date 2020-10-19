@@ -10,6 +10,10 @@ PREFIX_TIME = 'asv_time_'
 def apply_prototype(cls_prototype, group: str):
     def decorator(cls):
 
+        # NOTE: approach to temporarily exercising only one module
+        # if cls.__module__ != 'benchmarks.frame_constructor_to_file':
+        #     return cls
+
         for name in dir(cls_prototype):
             if name.startswith(PREFIX_TIME):
                 name_new = name.replace(PREFIX_TIME, 'time_')

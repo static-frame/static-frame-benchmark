@@ -12,10 +12,11 @@ from .fixtures_reference import FRAME_C
 
 class Prototype:
 
-
     def asv_time_unary_abs(self, ns: SimpleNamespace):
         _ = abs(ns.frame)
 
+    # def asv_time_unary_neg(self, ns: SimpleNamespace):
+    #     _ = -ns.frame
 
 
 def create_fixtures(fixture: str, shape: ShapeType):

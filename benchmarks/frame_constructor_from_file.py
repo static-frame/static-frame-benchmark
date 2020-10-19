@@ -7,12 +7,9 @@ from .fixtures import ShapeType
 from .prototype import apply_prototype
 
 from .fixtures_reference import FRAME_A
-from .fixtures_reference import FRAME_D
+from .fixtures_reference import FRAME_C
 
 class Prototype:
-
-    #---------------------------------------------------------------------------
-    # arithmetic methods
 
     # from_json?
 
@@ -29,7 +26,25 @@ class Prototype:
                 columns_depth=ns.frame.columns.depth,
                 )
 
+    def asv_time_from_parquet(self, ns: SimpleNamespace):
+        _ = sf.Frame.from_parquet('frame.parquet',
+                index_depth=ns.frame.index.depth,
+                columns_depth=ns.frame.columns.depth,
+                )
 
+
+    def asv_time_from_sqlite(self, ns: SimpleNamespace):
+        _ = sf.Frame.from_sqlite('frame.sqlite',
+                index_depth=ns.frame.index.depth,
+                columns_depth=ns.frame.columns.depth,
+                )
+
+    def asv_time_from_hdf5(self, ns: SimpleNamespace):
+        _ = sf.Frame.from_hdf5('frame.hdf5',
+                label='frame',
+                index_depth=ns.frame.index.depth,
+                columns_depth=ns.frame.columns.depth,
+                )
 
 #-------------------------------------------------------------------------------
 def create_fixtures(fixture: str, shape: ShapeType):
@@ -41,6 +56,19 @@ def create_fixtures(fixture: str, shape: ShapeType):
             include_columns=True,)
 
     frame.to_xlsx('frame.xlsx',
+            include_index=True,
+            include_columns=True,)
+
+    frame.to_parquet('frame.parquet',
+            include_index=True,
+            include_columns=True,)
+
+    frame.to_sqlite('frame.sqlite',
+            include_index=True,
+            include_columns=True,)
+
+    frame.to_hdf5('frame.hdf5',
+            label='frame',
             include_index=True,
             include_columns=True,)
 
@@ -61,9 +89,9 @@ class FrameA:
 
 
 @apply_prototype(Prototype, InterfaceGroup.Constructor)
-class FrameD:
+class FrameC:
 
-    FIXTURE = FRAME_D
+    FIXTURE = FRAME_C
     SHAPE = (100, 100)
 
     def setup_cache(self) -> SimpleNamespace:

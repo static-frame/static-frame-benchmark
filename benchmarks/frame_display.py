@@ -7,7 +7,7 @@ from .fixtures import FixtureFactory
 from .fixtures import ShapeType
 
 from .fixtures_reference import FRAME_A
-from .fixtures_reference import FRAME_B
+from .fixtures_reference import FRAME_D
 
 from .prototype import apply_prototype
 
@@ -38,9 +38,9 @@ class FrameA:
 
 
 @apply_prototype(Prototype, InterfaceGroup.Display)
-class FrameB:
+class FrameD:
 
-    FIXTURE = FRAME_B
+    FIXTURE = FRAME_D
     SHAPE = (1000, 10)
 
     def setup_cache(self) -> SimpleNamespace:
