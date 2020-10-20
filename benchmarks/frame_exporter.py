@@ -39,6 +39,13 @@ class Prototype:
                 include_index=True,
                 include_columns=True,)
 
+
+    def asv_time_to_frame_go(self, ns: SimpleNamespace):
+        _ = ns.frame.to_frame_go()
+
+    def asv_time_to_html(self, ns: SimpleNamespace):
+        _ = ns.frame.to_html()
+
 #-------------------------------------------------------------------------------
 def create_fixtures(fixture: str, shape: ShapeType):
     frame: sf.Frame = FixtureFactory.from_str(fixture)(shape)
