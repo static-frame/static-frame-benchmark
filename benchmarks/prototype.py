@@ -11,8 +11,8 @@ def apply_prototype(cls_prototype, group: str):
     def decorator(cls):
 
         # NOTE: approach to temporarily exercising only one module
-        if cls.__module__ != 'benchmarks.frame_method_go':
-            return cls
+        # if cls.__module__ != 'benchmarks.frame_method_go':
+        #     return cls
 
         for name in dir(cls_prototype):
             if name.startswith(PREFIX_TIME):

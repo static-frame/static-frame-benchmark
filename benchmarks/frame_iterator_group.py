@@ -19,7 +19,6 @@ class Prototype:
 
     def asv_time_iter_group_0_apply(self, ns: SimpleNamespace):
         _ = ns.frame.iter_group(ns.frame.columns.iloc[0]).apply(lambda f: f.shape)
-        print(_)
 
     def asv_time_iter_group_labels_0(self, ns: SimpleNamespace):
         for part in ns.frame.iter_group_labels(-1, axis=0):
