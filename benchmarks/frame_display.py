@@ -16,8 +16,8 @@ class Prototype:
     def asv_time_display(self, ns: SimpleNamespace):
         _ = ns.frame.display()
 
-    def asv_time_interface(self, ns: SimpleNamespace):
-        _ = ns.frame.interface
+    # def asv_time_interface(self, ns: SimpleNamespace):
+    #     _ = ns.frame.interface
 
 
 def create_fixtures(fixture: str, shape: ShapeType):
