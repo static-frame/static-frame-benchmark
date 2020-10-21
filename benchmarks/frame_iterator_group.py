@@ -37,7 +37,7 @@ def create_fixtures(fixture: str, shape: ShapeType):
             frame=frame,
             )
 
-@apply_prototype(Prototype, InterfaceGroup.Iterator)
+@apply_prototype(Prototype, sf.Frame, InterfaceGroup.Iterator)
 class FrameE:
 
     FIXTURE = FRAME_E
@@ -47,7 +47,7 @@ class FrameE:
         return create_fixtures(self.FIXTURE, self.SHAPE)
 
 
-@apply_prototype(Prototype, InterfaceGroup.Iterator)
+@apply_prototype(Prototype, sf.Frame, InterfaceGroup.Iterator)
 class FrameF:
 
     FIXTURE = FRAME_F

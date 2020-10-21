@@ -49,7 +49,7 @@ def create_fixtures(fixture: str, shape: ShapeType):
 
 
 
-@apply_prototype(Prototype, InterfaceGroup.Method)
+@apply_prototype(Prototype, sf.Frame, InterfaceGroup.Method)
 class FrameD:
 
     FIXTURE = FRAME_D

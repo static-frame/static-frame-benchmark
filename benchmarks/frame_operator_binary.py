@@ -37,7 +37,7 @@ def create_fixtures(fixture: str, shape: ShapeType):
     return SimpleNamespace(
             frame=frame)
 
-@apply_prototype(Prototype, InterfaceGroup.OperatorBinary)
+@apply_prototype(Prototype, sf.Frame, InterfaceGroup.OperatorBinary)
 class FrameA:
 
     FIXTURE = FRAME_A
@@ -47,7 +47,7 @@ class FrameA:
         return create_fixtures(self.FIXTURE, self.SHAPE)
 
 
-@apply_prototype(Prototype, InterfaceGroup.OperatorBinary)
+@apply_prototype(Prototype, sf.Frame, InterfaceGroup.OperatorBinary)
 class FrameC:
 
     FIXTURE = FRAME_C

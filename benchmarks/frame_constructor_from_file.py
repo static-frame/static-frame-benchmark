@@ -78,7 +78,7 @@ def create_fixtures(fixture: str, shape: ShapeType):
 
 
 
-@apply_prototype(Prototype, InterfaceGroup.Constructor)
+@apply_prototype(Prototype, sf.Frame, InterfaceGroup.Constructor)
 class FrameA:
 
     FIXTURE = FRAME_A
@@ -88,7 +88,7 @@ class FrameA:
         return create_fixtures(self.FIXTURE, self.SHAPE)
 
 
-@apply_prototype(Prototype, InterfaceGroup.Constructor)
+@apply_prototype(Prototype, sf.Frame, InterfaceGroup.Constructor)
 class FrameC:
 
     FIXTURE = FRAME_C

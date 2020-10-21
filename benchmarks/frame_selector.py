@@ -90,7 +90,7 @@ def create_fixtures(fixture: str, shape: ShapeType):
             index_bool=index_bool,
             )
 
-@apply_prototype(Prototype, InterfaceGroup.Selector)
+@apply_prototype(Prototype, sf.Frame, InterfaceGroup.Selector)
 class FrameA:
 
     FIXTURE = FRAME_A
@@ -100,7 +100,7 @@ class FrameA:
         return create_fixtures(self.FIXTURE, self.SHAPE)
 
 
-@apply_prototype(Prototype, InterfaceGroup.Selector)
+@apply_prototype(Prototype, sf.Frame, InterfaceGroup.Selector)
 class FrameB:
 
     FIXTURE = FRAME_B
@@ -109,7 +109,7 @@ class FrameB:
     def setup_cache(self) -> SimpleNamespace:
         return create_fixtures(self.FIXTURE, self.SHAPE)
 
-@apply_prototype(Prototype, InterfaceGroup.Selector)
+@apply_prototype(Prototype, sf.Frame, InterfaceGroup.Selector)
 class FrameD:
 
     FIXTURE = FRAME_D
