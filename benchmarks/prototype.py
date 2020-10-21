@@ -18,7 +18,9 @@ def apply_prototype(cls_prototype, container: tp.Type[ContainerOperand], group: 
         for name in dir(cls_prototype):
             if name.startswith(PREFIX_TIME):
                 name_new = name.replace(PREFIX_TIME, 'time_')
-                name_pretty = f"{name.replace(PREFIX_TIME, '')}-{cls.FIXTURE}"
+
+                fixture = cls.FIXTURE.replace('|', '')
+                name_pretty = f"{name.replace(PREFIX_TIME, '')}-{fixture}"
 
                 # NOTE: must bind Prototype func name at func def time
                 def func_new(self, ns: SimpleNamespace, name_prototype=name):
