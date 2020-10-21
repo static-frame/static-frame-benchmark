@@ -1,3 +1,4 @@
+import os
 
 import static_frame as sf
 from static_frame.core.interface import InterfaceGroup
@@ -10,7 +11,6 @@ from .fixtures_reference import FRAME_A
 from .fixtures_reference import FRAME_C
 
 class Prototype:
-
 
     def asv_time_to_delimited(self, ns: SimpleNamespace):
         ns.frame.to_delimited('frame.txt',
@@ -29,9 +29,13 @@ class Prototype:
                 include_columns=True,)
 
     def asv_time_to_sqlite(self, ns: SimpleNamespace):
-        ns.frame.to_sqlite('frame.sqlite',
+        fn = 'frame.sqlite'
+        ns.frame.to_sqlite(fn,
+                label='frame',
                 include_index=True,
                 include_columns=True,)
+        # NOTE: cannot do this in setup()
+        os.remove(fn)
 
     def asv_time_to_hdf5(self, ns: SimpleNamespace):
         ns.frame.to_hdf5('frame.hdf5',

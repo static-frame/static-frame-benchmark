@@ -28,8 +28,9 @@ def create_fixtures(fixture: str, shape: ShapeType):
     mid_iloc = len(frame.columns) // 2
     frame_part1 = frame.iloc[:, :mid_iloc].to_frame_go()
     frame_part2 = frame.iloc[:, mid_iloc:]
-    # mutate index so as to force reindex
-    frame_series = [frame.loc[sf.ILoc[1:], col] for col in frame.columns]
+
+    # mutate index so as to force reindex, only add 10 series as this test can be slow
+    frame_series = [frame.loc[sf.ILoc[1:], col] for col in frame.columns[:10]]
 
     return SimpleNamespace(
             frame=frame,
@@ -42,7 +43,7 @@ def create_fixtures(fixture: str, shape: ShapeType):
 class FrameG:
 
     FIXTURE = FRAME_G
-    SHAPE = (1000, 40)
+    SHAPE = (1000, 100)
 
     def setup_cache(self) -> SimpleNamespace:
         return create_fixtures(self.FIXTURE, self.SHAPE)
@@ -52,7 +53,7 @@ class FrameG:
 class FrameH:
 
     FIXTURE = FRAME_H
-    SHAPE = (1000, 40)
+    SHAPE = (1000, 100)
 
     def setup_cache(self) -> SimpleNamespace:
         return create_fixtures(self.FIXTURE, self.SHAPE)

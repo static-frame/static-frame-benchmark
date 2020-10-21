@@ -155,7 +155,7 @@ def create_fixtures(fixture: str, shape: ShapeType):
 class FrameA:
 
     FIXTURE = FRAME_A
-    SHAPE = (1000, 100)
+    SHAPE = (100, 100)
 
     def setup_cache(self) -> SimpleNamespace:
         return create_fixtures(self.FIXTURE, self.SHAPE)
@@ -165,7 +165,7 @@ class FrameA:
 class FrameC:
 
     FIXTURE = FRAME_C
-    SHAPE = (1000, 100)
+    SHAPE = (100, 100)
 
     def setup_cache(self) -> SimpleNamespace:
         return create_fixtures(self.FIXTURE, self.SHAPE)
