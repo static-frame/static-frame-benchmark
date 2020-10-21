@@ -113,7 +113,6 @@ def dtype_to_element_iter(dtype: np.dtype) -> tp.Iterator[tp.Any]:
     elif dtype.kind == 'M': # datetime64
         def gen() -> tp.Iterator[np.datetime64]:
             for v in ints:
-                ofoo = dtype
                 yield np.datetime64(v, np.datetime_data(dtype)[0])
 
     elif dtype.kind == 'm': # timedelta64
@@ -271,10 +270,7 @@ pipe_node_factory = partial(fpn.pipe_node_factory, core_decorator=lambda f: f)
 @pipe_node_factory
 @fpn.pipe_kwarg_bind(fpn.PN_INPUT)
 def f(pni, constructor):
-    # pni = kwargs[fpn.PN_INPUT]
-    pni['f'] = dict(constructor=constructor)
-    if pni.complete():
-        return pni.build()
+    return pni.add('f', dict(constructor=constructor))
 
 @pipe_node_factory
 @fpn.pipe_kwarg_bind(fpn.PN_INPUT)
@@ -282,9 +278,7 @@ def i(pni,
         constructor,
         dtype_spec: DtypeSpecOrSpecs,
         ):
-    pni['i'] = dict(constructor=constructor, dtype_spec=dtype_spec)
-    if pni.complete():
-        return pni.build()
+    return pni.add('i', dict(constructor=constructor, dtype_spec=dtype_spec))
 
 @pipe_node_factory
 @fpn.pipe_kwarg_bind(fpn.PN_INPUT)
@@ -292,16 +286,12 @@ def c(pni,
         constructor,
         dtype_spec: DtypeSpecOrSpecs,
         ):
-    pni['c'] = dict(constructor=constructor, dtype_spec=dtype_spec)
-    if pni.complete():
-        return pni.build()
+    return pni.add('c', dict(constructor=constructor, dtype_spec=dtype_spec))
 
 @pipe_node_factory
 @fpn.pipe_kwarg_bind(fpn.PN_INPUT)
 def v(pni, *dtype_specs):
-    pni['v'] = dict(dtype_specs=dtype_specs)
-    if pni.complete():
-        return pni.build()
+    return pni.add('v', dict(dtype_specs=dtype_specs))
 
 
 class Shape(fpn.PipeNodeInput):
@@ -317,10 +307,10 @@ class Shape(fpn.PipeNodeInput):
     def __repr__(self) -> str:
         return repr(self._ref)
 
-    def complete(self) -> bool:
+    def _complete(self) -> bool:
         return all(k in self._ref for k in tuple('ficv'))
 
-    def build(self) -> sf.Frame:
+    def _build(self) -> sf.Frame:
         count_row, count_col = self.shape
         index = Builder.build_index(count=count_row, **self._ref['i'])
         columns = Builder.build_index(count=count_col, **self._ref['c'])
@@ -332,9 +322,15 @@ class Shape(fpn.PipeNodeInput):
                 **self._ref['f'],
                 )
 
+    def add(self, key: str, args: tp.Dict[str, tp.Any]):
+        self.__setitem__(key, args)
+        if self._complete():
+            return self._build()
+
 
 class FixtureFactory:
     @staticmethod
     def from_str(msg: str) -> tp.Callable[[ShapeType], sf.Frame]:
         func = eval(msg)
         return lambda shape: func[Shape(shape)]
+

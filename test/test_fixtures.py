@@ -134,7 +134,3 @@ def test_fixture_factory() -> None:
     msg = 'f(F)|i((I,I),(str,bool))|c((IN,I),(dtns,int))|v(str,bool,object)'
     func = FixtureFactory.from_str(msg)
 
-
-    # f1 = post[Shape((4, 8))]
-
-
