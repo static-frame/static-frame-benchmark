@@ -4,7 +4,8 @@
 
 28% after 105m
 
-
+--------------------------------------------------------------------------------
+v1.0
 
 {.env-sfb}{} % time asv run v0.6.30..master
 · Running 20976 total benchmarks (92 commits * 1 environments * 228 benchmarks)
