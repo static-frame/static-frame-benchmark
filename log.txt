@@ -6,5 +6,9 @@
 
 
 
+{.env-sfb}{} % time asv run v0.6.30..master
+· Running 20976 total benchmarks (92 commits * 1 environments * 228 benchmarks)
 
-
+real	450m47.269s
+user	429m51.540s
+sys	30m57.039s
