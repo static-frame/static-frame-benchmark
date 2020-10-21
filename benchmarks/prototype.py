@@ -28,7 +28,8 @@ def apply_prototype(cls_prototype, container: tp.Type[ContainerOperand], group: 
                 func_new.pretty_source = inspect.getsource(getattr(cls_prototype, name))
 
                 # replacing module with a normalized group name; function name must start with "time"
-                func_new.benchmark_name = f'{container.__name__}: {group}.{cls.__name__}.{name_new}'
+                # func_new.benchmark_name = f'{container.__name__}: {group}.{cls.__name__}.{name_new}'
+                func_new.benchmark_name = f'{group}.{cls.__name__}.{name_new}'
 
                 setattr(cls, name_new, func_new)
         return cls
