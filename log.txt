@@ -32,8 +32,19 @@ real	6m8.560s
 v1.1
 
 Bringing down some slow tests.
-
 real	5m18.166s
 
-
+--
 time asv run v0.6.20..master
+· Running 75032 total benchmarks (332 commits * 1 environments * 226 benchmarks)
+[ 48.81%] ·· Interrupted.
+
+real	756m30.733s
+user	724m54.670s
+sys	48m49.013s
+
+# this would hae taken more than 12 hours!
+
+
+
+
