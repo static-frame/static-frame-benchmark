@@ -35,3 +35,5 @@ Bringing down some slow tests.
 
 real	5m18.166s
 
+
+time asv run v0.6.20..master
