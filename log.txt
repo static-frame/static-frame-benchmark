@@ -52,8 +52,6 @@ time asv run v0.6.28..master
 · Running 28702 total benchmarks (127 commits * 1 environments * 226 benchmarks)
 
 real	589m15.679s
-user	564m36.029s
-sys	38m21.257s
 
 # completed
 
