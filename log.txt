@@ -57,3 +57,10 @@ real	589m15.679s
 
 --
 
+
+time asv run v0.6.17..v0.6.28
+[ 52.59%] ··· Setting up frame_selector.py:109^C
+real	790m12.876s
+
+# only got to 50%
+
