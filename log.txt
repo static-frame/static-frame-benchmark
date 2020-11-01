@@ -59,3 +59,7 @@ sys	38m21.257s
 
 --
 
+{.env-sfb}{} % time asv run v0.6.0..master --skip-existing-successful
+· Running 173116 total benchmarks (766 commits * 1 environments * 226 benchmarks)
+
+
