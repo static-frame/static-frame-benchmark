@@ -1,3 +1,14 @@
+
+
+test runs:
+
+{.env-sfb}{} % asv run -qe
+
+--------------------------------------------------------------------------------
+
+
+
+
 2020-10-20
 {.env-sfb}{} % time asv run v0.6.30..master
 · Running 17480 total benchmarks (92 commits * 1 environments * 190 benchmarks)

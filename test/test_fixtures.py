@@ -11,7 +11,6 @@ from benchmarks import fixtures_reference
 # pytest -s --color no --disable-pytest-warnings --tb=native
 
 def test_fixtures_a() -> None:
-
     msg = 'f(Fg)|i(I,str)|c(IDg,dtD)|v(float)|s(10,10)'
     f1 = ff.Fixture.to_frame(msg)
     assert f1.shape == (10, 10)
