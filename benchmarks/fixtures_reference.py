@@ -10,7 +10,7 @@ FRAME_D = 'f(F)|i((I,I),(str,int))|c((I,I),(str,int))|v(str,float,object)|s(100,
 # for iter_group
 FRAME_E = 'f(F)|i(I,str)|c(I,str)|v(str,float,float,int)|s(100,100)'
 
-FRAME_F = 'f(F)|i((I,I),(str,bool))|c(I,str)|v(bool,float,float,int)|s(100,100)'
+FRAME_F = 'f(F)|i((I,I),(str,int))|c(I,str)|v(bool,float,float,int)|s(100,100)'
 
 # for grow-only
 FRAME_G = 'f(Fg)|i(I,str)|c(Ig,str)|v(float)|s(1000,100)'
