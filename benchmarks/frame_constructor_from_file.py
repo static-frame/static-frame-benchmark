@@ -2,10 +2,9 @@
 import static_frame as sf
 from static_frame.core.interface import InterfaceGroup
 from types import SimpleNamespace
-from .fixtures import FixtureFactory
-from .fixtures import ShapeType
-from .prototype import apply_prototype
+import frame_fixtures as ff
 
+from .prototype import apply_prototype
 from .fixtures_reference import FRAME_A
 from .fixtures_reference import FRAME_C
 
@@ -47,8 +46,8 @@ class Prototype:
                 )
 
 #-------------------------------------------------------------------------------
-def create_fixtures(fixture: str, shape: ShapeType):
-    frame: sf.Frame = FixtureFactory.from_str(fixture)(shape)
+def create_fixtures(fixture: str):
+    frame: sf.Frame = ff.Fixture.to_frame(fixture)
 
     frame.to_delimited('frame.txt',
             delimiter='|',
@@ -82,17 +81,15 @@ def create_fixtures(fixture: str, shape: ShapeType):
 class FrameA:
 
     FIXTURE = FRAME_A
-    SHAPE = (100, 100)
 
     def setup_cache(self) -> SimpleNamespace:
-        return create_fixtures(self.FIXTURE, self.SHAPE)
+        return create_fixtures(self.FIXTURE)
 
 
 @apply_prototype(Prototype, sf.Frame, InterfaceGroup.Constructor)
 class FrameC:
 
     FIXTURE = FRAME_C
-    SHAPE = (100, 100)
 
     def setup_cache(self) -> SimpleNamespace:
-        return create_fixtures(self.FIXTURE, self.SHAPE)
+        return create_fixtures(self.FIXTURE)

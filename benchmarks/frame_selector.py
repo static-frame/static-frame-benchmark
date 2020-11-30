@@ -3,8 +3,7 @@ from types import SimpleNamespace
 import static_frame as sf
 from static_frame.core.interface import InterfaceGroup
 
-from .fixtures import FixtureFactory
-from .fixtures import ShapeType
+import frame_fixtures as ff
 
 from .fixtures_reference import FRAME_A
 from .fixtures_reference import FRAME_B
@@ -67,10 +66,8 @@ class Prototype:
 
 
 
-
-
-def create_fixtures(fixture: str, shape: ShapeType):
-    frame = FixtureFactory.from_str(fixture)(shape)
+def create_fixtures(fixture: str):
+    frame = ff.Fixture.to_frame(fixture)
 
     columns_list = [c for i, c in enumerate(frame.columns) if i % 2]
     columns_slice = slice(frame.columns.iloc[len(frame.columns) // 2], None)
@@ -94,26 +91,23 @@ def create_fixtures(fixture: str, shape: ShapeType):
 class FrameA:
 
     FIXTURE = FRAME_A
-    SHAPE = (1000, 10)
 
     def setup_cache(self) -> SimpleNamespace:
-        return create_fixtures(self.FIXTURE, self.SHAPE)
+        return create_fixtures(self.FIXTURE)
 
 
 @apply_prototype(Prototype, sf.Frame, InterfaceGroup.Selector)
 class FrameB:
 
     FIXTURE = FRAME_B
-    SHAPE = (1000, 10)
 
     def setup_cache(self) -> SimpleNamespace:
-        return create_fixtures(self.FIXTURE, self.SHAPE)
+        return create_fixtures(self.FIXTURE)
 
 @apply_prototype(Prototype, sf.Frame, InterfaceGroup.Selector)
 class FrameD:
 
     FIXTURE = FRAME_D
-    SHAPE = (1000, 10)
 
     def setup_cache(self) -> SimpleNamespace:
-        return create_fixtures(self.FIXTURE, self.SHAPE)
+        return create_fixtures(self.FIXTURE)

@@ -3,8 +3,7 @@ import static_frame as sf
 from static_frame.core.interface import InterfaceGroup
 
 from types import SimpleNamespace
-from .fixtures import FixtureFactory
-from .fixtures import ShapeType
+import frame_fixtures as ff
 from .prototype import apply_prototype
 
 from .fixtures_reference import FRAME_A
@@ -142,8 +141,8 @@ class Prototype:
         _ = ns.frame.unique(axis=1)
 
 
-def create_fixtures(fixture: str, shape: ShapeType):
-    frame = FixtureFactory.from_str(fixture)(shape)
+def create_fixtures(fixture: str):
+    frame = ff.Fixture.to_frame(fixture)
     frame_alt = frame.assign.iloc[0, 0](-1)
 
     return SimpleNamespace(
@@ -155,17 +154,15 @@ def create_fixtures(fixture: str, shape: ShapeType):
 class FrameA:
 
     FIXTURE = FRAME_A
-    SHAPE = (100, 100)
 
     def setup_cache(self) -> SimpleNamespace:
-        return create_fixtures(self.FIXTURE, self.SHAPE)
+        return create_fixtures(self.FIXTURE)
 
 
 @apply_prototype(Prototype, sf.Frame, InterfaceGroup.Method)
 class FrameC:
 
     FIXTURE = FRAME_C
-    SHAPE = (100, 100)
 
     def setup_cache(self) -> SimpleNamespace:
-        return create_fixtures(self.FIXTURE, self.SHAPE)
+        return create_fixtures(self.FIXTURE)
