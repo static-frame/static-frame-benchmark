@@ -51,7 +51,7 @@ class Prototype:
 
 #-------------------------------------------------------------------------------
 def create_fixtures(fixture: str):
-    frame: sf.Frame = ff.Fixture.to_frame(fixture)
+    frame: sf.Frame = ff.parse(fixture)
     return SimpleNamespace(
             frame=frame)
 
