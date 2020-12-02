@@ -50,7 +50,7 @@ class Prototype:
 
 
 def create_fixtures(fixture: str):
-    frame = ff.Fixture.to_frame(fixture)
+    frame = ff.parse(fixture)
 
     records = [tuple(t) for t in frame.iter_tuple(axis=1)]
     records_dict = [dict(t) for t in frame.iter_series(axis=1)]

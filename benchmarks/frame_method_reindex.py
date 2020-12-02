@@ -36,7 +36,7 @@ class Prototype:
 
 
 def create_fixtures(fixture: str):
-    frame = ff.Fixture.to_frame(fixture)
+    frame = ff.parse(fixture)
     columns_list = [c for i, c in enumerate(frame.columns) if i % 2]
     index_list = [c for i, c in enumerate(frame.index) if i % 2]
 

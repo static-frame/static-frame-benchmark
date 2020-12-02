@@ -23,7 +23,7 @@ class Prototype:
 
 
 def create_fixtures(fixture: str):
-    frame = ff.Fixture.to_frame(fixture)
+    frame = ff.parse(fixture)
 
     return SimpleNamespace(
             frame=frame,

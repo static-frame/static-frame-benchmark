@@ -23,7 +23,7 @@ class Prototype:
 
 
 def create_fixtures(fixture: str):
-    frame = ff.Fixture.to_frame(fixture)
+    frame = ff.parse(fixture)
     mid_iloc = len(frame.columns) // 2
     frame_part1 = frame.iloc[:, :mid_iloc].to_frame_go()
     frame_part2 = frame.iloc[:, mid_iloc:]

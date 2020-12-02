@@ -142,7 +142,7 @@ class Prototype:
 
 
 def create_fixtures(fixture: str):
-    frame = ff.Fixture.to_frame(fixture)
+    frame = ff.parse(fixture)
     frame_alt = frame.assign.iloc[0, 0](-1)
 
     return SimpleNamespace(

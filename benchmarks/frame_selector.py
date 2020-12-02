@@ -67,7 +67,7 @@ class Prototype:
 
 
 def create_fixtures(fixture: str):
-    frame = ff.Fixture.to_frame(fixture)
+    frame = ff.parse(fixture)
 
     columns_list = [c for i, c in enumerate(frame.columns) if i % 2]
     columns_slice = slice(frame.columns.iloc[len(frame.columns) // 2], None)
