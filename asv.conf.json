@@ -75,7 +75,7 @@
     "matrix": {
         // "Cython": ["0.29.13"],
         // "pandas": ["0.24.2"],
-        "frame-fixtures": ["0.1.3"],
+        "frame-fixtures": ["0.2.0"],
         "xlsxwriter": ["1.1.2"],
         "openpyxl": ["3.0.0"],
         "xarray": ["0.13.0"],
