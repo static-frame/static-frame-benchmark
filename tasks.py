@@ -29,7 +29,6 @@ def publish(context):
 def preview(context):
     context.run('asv preview')
 
-
 @invoke.task(pre=(bench08, publish, preview))
 def bpp(context):
     '''bench, publihs, preview
