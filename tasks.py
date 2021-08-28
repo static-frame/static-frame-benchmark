@@ -28,7 +28,7 @@ def benchtest(context):
 def bench08(context):
     '''Clean doc and build artifacts
     '''
-    context.run('asv run v0.8.18..master --skip-existing')
+    context.run('asv run v0.8.0..master --skip-existing')
 
 
 @invoke.task
