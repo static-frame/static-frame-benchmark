@@ -31,6 +31,8 @@ def preview(context):
 
 
 @invoke.task(pre=(bench08, publish, preview))
-def bench_pub_preview(context):
+def bpp(context):
+    '''bench, publihs, preview
+    '''
     pass
 
