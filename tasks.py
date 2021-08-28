@@ -14,6 +14,16 @@ def clean(context):
     context.run('rm -rf .pytest_cache')
     context.run('rm -rf docs')
 
+
+
+@invoke.task
+def benchtest(context):
+    '''Clean doc and build artifacts
+    '''
+    context.run('asv dev')
+
+
+
 @invoke.task
 def bench08(context):
     '''Clean doc and build artifacts
